@@ -6,6 +6,7 @@
     "immutable": "^3.8.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
+    "react-popper": "^1.0.0-beta.6",
     "react-scripts": "1.1.4",
     "slate": "^0.33.7",
     "slate-react": "^0.12.7"

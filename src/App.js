@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import {Editor} from 'slate-react';
 import {Value} from 'slate';
+import {Manager, Reference, Popper} from 'react-popper';
 
 const initialValue = Value.fromJSON({
   document: {
@@ -130,12 +131,36 @@ class App extends Component {
     switch (props.node.type) {
       case 'expression':
         return (
-          <span
-            {...props.attributes}
-            style={{backgroundColor: '#aaa', fontFamily: 'monospace'}}
-          >
-                        {props.children}
-                    </span>
+          <Manager>
+            <Reference>
+              {({ref}) => (
+                <span
+                  {...props.attributes}
+                  ref={ref}
+                  style={{backgroundColor: '#aaa', fontFamily: 'monospace'}}
+                >
+                  {props.children}
+                </span>
+              )}
+            </Reference>
+            {props.isSelected && this.state.suggestionSourceText ? (
+              <Popper
+                placement="bottom">
+                {({ref, style, placement, arrowProps}) => (
+                  <div ref={ref} style={style} data-placement={placement}>
+                    <div ref={arrowProps.ref} style={arrowProps.style}>
+                      <ul style={{border: '1px solid #ccc', margin: '2px 0 0 0', padding: '4px'}}>
+                        {getSuggestionsFor(this.state.suggestionSourceText).map(s => (
+                          <li key={s} style={{fontSize: '16px', fontFamily: 'monospace', listStyle: 'none'}}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </Popper>
+            ) : null}
+          </Manager>
+
         );
     }
   };
@@ -172,19 +197,6 @@ class App extends Component {
             renderMark={this.renderMark}
             placeholder="Start typing..., use {{ for refs"
           />
-          <div style={{marginTop: '30px'}}>
-            {this.state.suggestionSourceText ? (
-              <div>
-                <em>Building suggestions for {this.state.suggestionSourceText}:</em>
-                <ul>
-                  {getSuggestionsFor(this.state.suggestionSourceText).map(s => (
-                    <li key={s}>{s}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-          </div>
         </div>
       </div>
     );
